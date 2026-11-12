@@ -3,12 +3,7 @@ import { NextResponse } from "next/server";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-const MODELS = [
-  "gemini-3.8-flash",
-  "gemini-3.8-flash-lite",
-  "gemini-3-flash-preview",
-];
-
+const MODELS = ["gemini-3.8-flash", "gemini-3.8-pro"];
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function POST(req) {
@@ -41,7 +36,7 @@ Quy tắc bắt buộc:
     let response = null;
     let lastError = null;
 
-    for (let attempt = 0; attempt < 2; attempt++) {
+    for (let attempt = 0; attempt < 4; attempt++) {
       for (const modelName of MODELS) {
         try {
           response = await ai.models.generateContent({
@@ -56,17 +51,16 @@ Quy tắc bắt buộc:
         } catch (err) {
           lastError = err;
           await sleep(1500);
-          continue;
         }
       }
       if (response?.text) break;
     }
 
     if (!response?.text) {
-      throw lastError || new Error("Máy chủ AI đang bận, vui lòng bấm thử lại sau vài giây.");
+      throw lastError || new Error("Máy chủ AI đang bận, vui lòng bấm thử lại.");
     }
 
-    let cleanCode = response.text
+    const cleanCode = response.text
       .replace(/```python/gi, "")
       .replace(/```/g, "")
       .trim();
