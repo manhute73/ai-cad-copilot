@@ -3,6 +3,12 @@ import { NextResponse } from "next/server";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
+const MODELS = [
+  "gemini-3.8-flash",
+  "gemini-3.1-pro-preview",
+  "gemini-3.0-flash",
+];
+
 export async function POST(req) {
   try {
     const { prompt, imageBase64, mimeType } = await req.json();
@@ -30,17 +36,34 @@ Quy tắc bắt buộc:
     }
     contents.push(prompt || "Dựng cụm chi tiết cơ khí theo ảnh phác thảo.");
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.8-flash",
-      contents: contents,
-      config: {
-        systemInstruction: systemInstruction,
-        temperature: 0.1,
-      },
-    });
+    let response = null;
+    let lastError = null;
 
-    let cleanCode = response.text || "";
-    cleanCode = cleanCode.replace(/```python/gi, "").replace(/```/g, "").trim();
+    for (const modelName of MODELS) {
+      try {
+        response = await ai.models.generateContent({
+          model: modelName,
+          contents: contents,
+          config: {
+            systemInstruction: systemInstruction,
+            temperature: 0.1,
+          },
+        });
+        if (response?.text) break;
+      } catch (err) {
+        lastError = err;
+        continue;
+      }
+    }
+
+    if (!response?.text) {
+      throw lastError || new Error("Tất cả các model đều đang bận, vui lòng thử lại sau vài giây.");
+    }
+
+    let cleanCode = response.text
+      .replace(/```python/gi, "")
+      .replace(/```/g, "")
+      .trim();
 
     return NextResponse.json({ code: cleanCode });
   } catch (error) {
