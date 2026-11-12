@@ -31,7 +31,7 @@ Quy tắc bắt buộc:
     contents.push(prompt || "Dựng cụm chi tiết cơ khí theo ảnh phác thảo.");
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-3.8-flash",
       contents: contents,
       config: {
         systemInstruction: systemInstruction,
