@@ -40,7 +40,7 @@ export async function POST(req) {
     contents.push(prompt || "Phân tích hình ảnh này và dựng thành cụm lắp ráp máy hoàn chỉnh với kích thước tiêu chuẩn hợp lý.");
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-pro",
+      model: "gemini-3.1-pro-preview",
       contents: contents,
       config: {
         systemInstruction: SYSTEM_PROMPT,
