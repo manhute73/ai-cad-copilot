@@ -115,4 +115,66 @@ export default function UniversalCadCopilot() {
             <input
               type="file"
               accept="image/*"
-              on
+              onChange={handleImageUpload}
+              className="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-slate-800 file:text-amber-400 hover:file:bg-slate-700 cursor-pointer"
+            />
+            {image && (
+              <img
+                src={image.preview}
+                alt="Preview"
+                className="mt-3 max-h-52 rounded-lg border border-slate-700 object-contain"
+              />
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              2. Mô tả cấu tạo cụm máy & thông số kích thước chính
+            </label>
+            <textarea
+              rows={4}
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="Ví dụ: Thiết kế máy ép khung chữ H: Tấm đế dưới 800x600x40mm. Hai trụ dẫn hướng tròn đường kính 60mm cao 1200mm đặt cách tâm 300mm về hai bên trái phải. Xà ngang đỉnh máy 800x300x60mm đặt trên đầu hai trụ. Chính giữa xà ngang gắn xi lanh tròn đường kính 140mm dài 350mm hướng xuống dưới, đầu xi lanh gắn bàn ép kích thước 300x300x30mm..."
+              className="w-full rounded-lg bg-slate-950 border border-slate-700 p-3 text-slate-100 focus:border-amber-400 focus:outline-none text-sm"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg transition disabled:opacity-50 shadow-lg"
+          >
+            {loading
+              ? "Đang tính toán & Dựng máy..."
+              : `Dựng cụm máy trên ${software === "inventor" ? "Autodesk Inventor" : "SolidWorks"}`}
+          </button>
+        </form>
+
+        <div className="p-4 rounded-lg bg-slate-900 border border-slate-800 text-sm flex items-center justify-between">
+          <div>
+            <span className="font-semibold text-slate-400">Trạng thái: </span>
+            <span className="text-slate-100">{status}</span>
+          </div>
+          <span className="text-xs text-slate-500">Local Port: 5000</span>
+        </div>
+
+        {generatedCode && (
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <h3 className="text-sm font-semibold text-slate-400">
+                Kịch bản lắp ráp & Tọa độ AI đã xuất:
+              </h3>
+              <span className="text-xs text-slate-500">
+                File lưu tại: C:\AI_CAD_Projects\
+              </span>
+            </div>
+            <pre className="p-4 rounded-lg bg-black text-emerald-400 text-xs overflow-x-auto border border-slate-800 leading-relaxed">
+              {generatedCode}
+            </pre>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
